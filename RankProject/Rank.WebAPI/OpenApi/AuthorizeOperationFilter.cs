@@ -4,7 +4,7 @@ using Swashbuckle.AspNetCore.SwaggerGen;
 
 namespace Rank.WebAPI.OpenApi;
 
-public sealed class AuthorizeOperationFilter : IOperationFilter
+public class AuthorizeOperationFilter : IOperationFilter
 {
     public void Apply(OpenApiOperation operation, OperationFilterContext context)
     {

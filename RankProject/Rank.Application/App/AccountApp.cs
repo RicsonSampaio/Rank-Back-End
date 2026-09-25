@@ -1,11 +1,22 @@
+using Microsoft.Extensions.DependencyInjection;
 using Rank.Core.DTO.Request.Auth;
 using Rank.Core.DTO.Response;
 using Rank.Core.Service;
 
 namespace Rank.Application.App;
 
-public sealed class AccountApp(AccountService service)
+public class AccountApp
 {
-    public Task<TokenResponse?> GenerateTokenAsync(LoginRequest request, CancellationToken cancellationToken) =>
-        service.GenerateTokenAsync(request, cancellationToken);
+    private readonly IServiceProvider _provider;
+
+    public AccountApp(IServiceProvider provider)
+    {
+        _provider = provider;
+    }
+
+    public Task<TokenResponse?> GenerateTokenAsync(LoginRequest request, CancellationToken cancellationToken)
+    {
+        var accountService = _provider.GetRequiredService<AccountService>();
+        return accountService.GenerateTokenAsync(request, cancellationToken);
+    }
 }

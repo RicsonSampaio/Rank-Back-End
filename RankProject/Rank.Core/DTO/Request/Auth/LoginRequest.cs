@@ -2,7 +2,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace Rank.Core.DTO.Request.Auth;
 
-public sealed class LoginRequest
+public class LoginRequest
 {
     [Required, EmailAddress]
     public string Email { get; init; } = string.Empty;

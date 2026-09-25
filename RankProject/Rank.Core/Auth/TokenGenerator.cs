@@ -1,17 +1,25 @@
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
-using Rank.Core.Auth;
 using Rank.Core.DomainEntity;
 using Rank.Core.DTO.Response;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 
-namespace Rank.WebAPI.Authentication;
+namespace Rank.Core.Auth;
 
-public sealed class JwtTokenGenerator(JwtOptions options) : ITokenGenerator
+public class TokenGenerator
 {
+    private readonly IServiceProvider _provider;
+
+    public TokenGenerator(IServiceProvider provider)
+    {
+        _provider = provider;
+    }
+
     public TokenResponse Generate(User user)
     {
+        var options = _provider.GetRequiredService<JwtOptions>();
         var expires = DateTimeOffset.UtcNow.AddMinutes(options.ExpirationMinutes);
         var claims = new[]
         {

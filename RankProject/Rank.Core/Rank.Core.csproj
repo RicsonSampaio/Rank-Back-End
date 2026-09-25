@@ -7,6 +7,13 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Dapper" Version="2.0.123" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="8.0.0" />
+    <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="7.1.2" />
+    <ProjectReference Include="..\Rank.Infra.Data.MySql\Rank.Infra.Data.MySql.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Folder Include="DomainEntity\" />
     <Folder Include="DTO\" />
     <Folder Include="Enum\" />

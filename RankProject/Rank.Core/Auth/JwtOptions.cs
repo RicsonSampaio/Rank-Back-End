@@ -1,6 +1,6 @@
-namespace Rank.WebAPI.Authentication;
+namespace Rank.Core.Auth;
 
-public sealed class JwtOptions
+public class JwtOptions
 {
     public string Key { get; init; } = string.Empty;
     public string Issuer { get; init; } = string.Empty;

@@ -1,6 +1,6 @@
 namespace Rank.Core.DomainEntity;
 
-public sealed class User
+public class User
 {
     public long Id { get; init; }
     public string Email { get; init; } = string.Empty;

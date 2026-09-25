@@ -4,7 +4,6 @@ using Microsoft.OpenApi.Models;
 using Rank.Core.Auth;
 using Rank.Core.Repository;
 using Rank.Infra.IoC;
-using Rank.WebAPI.Authentication;
 using Rank.WebAPI.OpenApi;
 using System.Text;
 
@@ -18,7 +17,6 @@ if (string.IsNullOrWhiteSpace(jwt.Issuer) || string.IsNullOrWhiteSpace(jwt.Audie
     throw new InvalidOperationException("Configure Jwt:Issuer, Jwt:Audience e Jwt:ExpirationMinutes.");
 
 builder.Services.AddSingleton(jwt);
-builder.Services.AddSingleton<ITokenGenerator, JwtTokenGenerator>();
 builder.Services.AddRankServices(builder.Configuration);
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
@@ -66,7 +64,7 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                     return;
                 }
 
-                var repository = context.HttpContext.RequestServices.GetRequiredService<IUserRepository>();
+                var repository = context.HttpContext.RequestServices.GetRequiredService<UserRepository>();
                 var user = await repository.GetByIdAsync(id, context.HttpContext.RequestAborted);
                 if (user is null || !user.IsActive)
                     context.Fail("Usuário não está ativo.");

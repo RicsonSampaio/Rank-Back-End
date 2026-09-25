@@ -2,7 +2,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace Rank.Core.DTO.Request.Users;
 
-public sealed class UpdateUserRequest
+public class UpdateUserRequest
 {
     [Required, EmailAddress, StringLength(320)]
     public string Email { get; init; } = string.Empty;

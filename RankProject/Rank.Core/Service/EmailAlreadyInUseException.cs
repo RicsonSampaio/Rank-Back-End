@@ -1,3 +1,8 @@
 namespace Rank.Core.Service;
 
-public sealed class EmailAlreadyInUseException() : Exception("Este email já está cadastrado.");
+public class EmailAlreadyInUseException : Exception
+{
+    public EmailAlreadyInUseException() : base("Este email já está cadastrado.")
+    {
+    }
+}

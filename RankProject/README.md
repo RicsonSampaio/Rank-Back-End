@@ -1,6 +1,6 @@
 # Rank
 
-API .NET 8 para um projeto pessoal. A estrutura foi inspirada no fluxo do ConstruCode: `Controller → App → Service → Repository`. O repositório usa Dapper. Os casos de uso atuais são cadastro, consulta, atualização, exclusão de usuários e login.
+API .NET 8 para um projeto pessoal. A estrutura segue o fluxo do ConstruCode: `Controller → App → Service → Repository`. Controllers, Apps e Services recebem `IServiceProvider` no construtor e resolvem as classes concretas com `GetRequiredService<T>()` dentro dos métodos. O repositório usa Dapper. Os casos de uso atuais são cadastro, consulta, atualização, exclusão de usuários e login.
 
 ## Projetos
 
@@ -8,11 +8,13 @@ API .NET 8 para um projeto pessoal. A estrutura foi inspirada no fluxo do Constr
 | --- | --- |
 | `Rank.WebAPI` | Controller HTTP, configuração de CORS e autenticação JWT |
 | `Rank.Application` | Entrada da aplicação; encaminha o caso de uso ao serviço |
-| `Rank.Core` | Entidade, DTOs, regras de usuários e interfaces |
-| `Rank.Infra.Data.MySql` | Consultas MySQL com Dapper |
+| `Rank.Core` | Entidade, DTOs, Services, `UserRepository` e geração de token |
+| `Rank.Infra.Data.MySql` | `DBDapperComponent`: abre conexões e executa consultas e comandos Dapper |
 | `Rank.Infra.IoC` | Registro das dependências |
 
 Como o ConstruCode, esta versão usa MySQL. Para senhas novas, usa PBKDF2-SHA256 com salt aleatório em vez de MD5. Não há migração de usuários do outro projeto.
+
+Em `Rank.Core.Repository`, cada método monta o `commandText` e chama `QuerySingleAsync`, `QueryListAsync`, `ExecuteAsync` ou `InsertAndGetIdAsync` da base. A abertura e o descarte da conexão ficam em `DBDapperComponent`.
 
 ## Executar localmente
 
