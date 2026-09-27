@@ -10,6 +10,6 @@ public class CreateUserRequest
     [Required, StringLength(150, MinimumLength = 2)]
     public string Name { get; init; } = string.Empty;
 
-    [Required, MinLength(8)]
+    [Required(AllowEmptyStrings = true)]
     public string Password { get; init; } = string.Empty;
 }

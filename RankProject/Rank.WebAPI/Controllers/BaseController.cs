@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Rank.WebAPI.Authentication;
 
 namespace Rank.WebAPI.Controllers;
 
@@ -8,9 +9,47 @@ namespace Rank.WebAPI.Controllers;
 public class BaseController : Controller
 {
     protected readonly IServiceProvider _provider;
+    protected readonly CurrentUser _currentUser;
 
     public BaseController(IServiceProvider provider)
     {
         _provider = provider;
+        _currentUser = _provider.GetRequiredService<CurrentUser>();
+    }
+
+    [NonAction]
+    public long GetUserId()
+    {
+        return _currentUser.Id;
+    }
+
+    [NonAction]
+    public string GetUserEmail()
+    {
+        return _currentUser.Email;
+    }
+
+    [NonAction]
+    public string GetUserName()
+    {
+        return _currentUser.UserName;
+    }
+
+    [NonAction]
+    public bool IsAdmin()
+    {
+        return _currentUser.Admin;
+    }
+
+    [NonAction]
+    public long? GetOrganizacaoId()
+    {
+        return _currentUser.IdOrganizacao;
+    }
+
+    [NonAction]
+    public string? GetAvatar()
+    {
+        return _currentUser.FotoAccount;
     }
 }

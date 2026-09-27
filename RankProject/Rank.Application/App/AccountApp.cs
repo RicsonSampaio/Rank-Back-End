@@ -14,9 +14,9 @@ public class AccountApp
         _provider = provider;
     }
 
-    public Task<TokenResponse?> GenerateTokenAsync(LoginRequest request, CancellationToken cancellationToken)
+    public Task<TokenResponse?> GenerateTokenAsync(LoginRequest request)
     {
         var accountService = _provider.GetRequiredService<AccountService>();
-        return accountService.GenerateTokenAsync(request, cancellationToken);
+        return accountService.GenerateTokenAsync(request);
     }
 }

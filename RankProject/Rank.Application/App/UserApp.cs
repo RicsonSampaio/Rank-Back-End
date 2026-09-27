@@ -14,33 +14,33 @@ public class UserApp
         _provider = provider;
     }
 
-    public Task<UserResponse> CreateAsync(CreateUserRequest request, CancellationToken cancellationToken)
+    public Task<UserResponse> CreateAsync(CreateUserRequest request)
     {
         var userService = _provider.GetRequiredService<UserService>();
-        return userService.CreateAsync(request, cancellationToken);
+        return userService.CreateAsync(request);
     }
 
-    public Task<IReadOnlyList<UserResponse>> GetAllAsync(CancellationToken cancellationToken)
+    public Task<IReadOnlyList<UserResponse>> GetAllAsync()
     {
         var userService = _provider.GetRequiredService<UserService>();
-        return userService.GetAllAsync(cancellationToken);
+        return userService.GetAllAsync();
     }
 
-    public Task<UserResponse?> GetByIdAsync(long id, CancellationToken cancellationToken)
+    public Task<UserResponse?> GetByIdAsync(long id)
     {
         var userService = _provider.GetRequiredService<UserService>();
-        return userService.GetByIdAsync(id, cancellationToken);
+        return userService.GetByIdAsync(id);
     }
 
-    public Task<UserResponse?> UpdateAsync(long id, UpdateUserRequest request, CancellationToken cancellationToken)
+    public Task<UserResponse?> UpdateAsync(long id, UpdateUserRequest request)
     {
         var userService = _provider.GetRequiredService<UserService>();
-        return userService.UpdateAsync(id, request, cancellationToken);
+        return userService.UpdateAsync(id, request);
     }
 
-    public Task<bool> DeleteAsync(long id, CancellationToken cancellationToken)
+    public Task<bool> DeleteAsync(long id)
     {
         var userService = _provider.GetRequiredService<UserService>();
-        return userService.DeleteAsync(id, cancellationToken);
+        return userService.DeleteAsync(id);
     }
 }

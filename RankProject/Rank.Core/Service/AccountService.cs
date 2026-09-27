@@ -15,11 +15,11 @@ public class AccountService
         _provider = provider;
     }
 
-    public async Task<TokenResponse?> GenerateTokenAsync(LoginRequest request, CancellationToken cancellationToken)
+    public async Task<TokenResponse?> GenerateTokenAsync(LoginRequest request)
     {
         var userRepository = _provider.GetRequiredService<UserRepository>();
         var tokenGenerator = _provider.GetRequiredService<TokenGenerator>();
-        var user = await userRepository.GetByEmailAsync(request.Email.Trim(), cancellationToken);
+        var user = await userRepository.GetByEmailAsync(request.Email.Trim());
         if (user is null || !user.IsActive || !PasswordHasher.Verify(request.Password, user.PasswordHash))
             return null;
 

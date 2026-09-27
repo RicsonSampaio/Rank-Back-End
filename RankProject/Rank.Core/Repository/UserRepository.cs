@@ -1,6 +1,4 @@
-using MySqlConnector;
 using Rank.Core.DomainEntity;
-using Rank.Core.Service;
 using Rank.Infra.Data.MySql.Common;
 
 namespace Rank.Core.Repository;
@@ -8,62 +6,53 @@ namespace Rank.Core.Repository;
 public class UserRepository : DBDapperComponent
 {
     private const string cTableName = "usuario";
-    private const string cListFields = "Id, Email, Name, PasswordHash, IsActive";
-    private const string cPublicFields = "Id, Email, Name, IsActive";
+    private const string cListFields = "id, email, name, passwordhash, isactive, idOrganizacao, admin, dataCriacao, fotoAccount";
+    private const string cPublicFields = "id, email, name, isactive, idOrganizacao, admin, dataCriacao, fotoAccount";
 
     public UserRepository() : base()
     {
     }
 
-    public async Task<User?> GetByEmailAsync(string email, CancellationToken cancellationToken)
+    public async Task<User?> GetByEmailAsync(string email)
     {
-        string commandText = "SELECT " + cListFields + " FROM " + cTableName + " WHERE Email = @email";
-        return await QuerySingleAsync<User>(commandText, new { email }, cancellationToken).ConfigureAwait(false);
+        string commandText = "SELECT " + cListFields + " FROM " + cTableName + " WHERE email = @email";
+        return await QuerySingleAsync<User>(commandText, new { email }).ConfigureAwait(false);
     }
 
-    public async Task<User?> GetByIdAsync(long id, CancellationToken cancellationToken)
+    public async Task<User?> GetByIdAsync(long id)
     {
-        string commandText = "SELECT " + cListFields + " FROM " + cTableName + " WHERE Id = @id";
-        return await QuerySingleAsync<User>(commandText, new { id }, cancellationToken).ConfigureAwait(false);
+        string commandText = "SELECT " + cListFields + " FROM " + cTableName + " WHERE id = @id";
+        return await QuerySingleAsync<User>(commandText, new { id }).ConfigureAwait(false);
     }
 
-    public async Task<IReadOnlyList<User>> GetAllAsync(CancellationToken cancellationToken)
+    public async Task<IReadOnlyList<User>> GetAllAsync()
     {
-        string commandText = "SELECT " + cPublicFields + " FROM " + cTableName + " ORDER BY Id";
-        return await QueryListAsync<User>(commandText, cancellationToken: cancellationToken).ConfigureAwait(false);
+        string commandText = "SELECT " + cPublicFields + " FROM " + cTableName + " ORDER BY id";
+        return await QueryListAsync<User>(commandText).ConfigureAwait(false);
     }
 
-    public async Task<long> CreateAsync(User user, CancellationToken cancellationToken)
+    public async Task<User> CreateAsync(User user)
     {
-        string commandText = "INSERT INTO " + cTableName +
-            " (Email, Name, PasswordHash, IsActive) VALUES (@Email, @Name, @PasswordHash, @IsActive)";
-        try
-        {
-            return await InsertAndGetIdAsync(commandText, user, cancellationToken).ConfigureAwait(false);
-        }
-        catch (MySqlException ex) when (ex.Number == 1062)
-        {
-            throw new EmailAlreadyInUseException();
-        }
+        // LAST_INSERT_ID() é o ID da organização no INSERT do usuário.
+        // Após esse INSERT, passa a ser o ID do usuário para o SELECT final.
+        string commandText = "INSERT INTO organizacao (nome, dataCriacao, logo) VALUES (@Name, @DataCriacao, NULL); " +
+            "INSERT INTO " + cTableName +
+            " (email, name, passwordhash, isactive, idOrganizacao, admin, dataCriacao, fotoAccount) " +
+            "VALUES (@Email, @Name, @PasswordHash, @IsActive, LAST_INSERT_ID(), @Admin, @DataCriacao, @FotoAccount); " +
+            "SELECT " + cListFields + " FROM " + cTableName + " WHERE id = LAST_INSERT_ID();";
+        return await QuerySingleTransactionAsync<User>(commandText, user).ConfigureAwait(false);
     }
 
-    public async Task<bool> UpdateAsync(User user, CancellationToken cancellationToken)
+    public async Task<bool> UpdateAsync(User user)
     {
         string commandText = "UPDATE " + cTableName +
-            " SET Email = @Email, Name = @Name, PasswordHash = @PasswordHash WHERE Id = @Id AND IsActive = 1";
-        try
-        {
-            return await ExecuteAsync(commandText, user, cancellationToken).ConfigureAwait(false) > 0;
-        }
-        catch (MySqlException ex) when (ex.Number == 1062)
-        {
-            throw new EmailAlreadyInUseException();
-        }
+            " SET email = @Email, name = @Name, passwordhash = @PasswordHash WHERE id = @Id AND isactive = 1";
+        return await ExecuteAsync(commandText, user).ConfigureAwait(false) > 0;
     }
 
-    public async Task<bool> DeleteAsync(long id, CancellationToken cancellationToken)
+    public async Task<bool> DeleteAsync(long id)
     {
-        string commandText = "DELETE FROM " + cTableName + " WHERE Id = @id";
-        return await ExecuteAsync(commandText, new { id }, cancellationToken).ConfigureAwait(false) > 0;
+        string commandText = "DELETE FROM " + cTableName + " WHERE id = @id";
+        return await ExecuteAsync(commandText, new { id }).ConfigureAwait(false) > 0;
     }
 }

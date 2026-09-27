@@ -10,7 +10,7 @@ public static class PasswordHasher
 
     public static string Hash(string password)
     {
-        ArgumentException.ThrowIfNullOrEmpty(password);
+        ArgumentNullException.ThrowIfNull(password);
         var salt = RandomNumberGenerator.GetBytes(SaltLength);
         var hash = Rfc2898DeriveBytes.Pbkdf2(password, salt, Iterations, HashAlgorithmName.SHA256, HashLength);
         return $"pbkdf2-sha256${Iterations}${Convert.ToBase64String(salt)}${Convert.ToBase64String(hash)}";
@@ -18,7 +18,7 @@ public static class PasswordHasher
 
     public static bool Verify(string password, string? storedHash)
     {
-        if (string.IsNullOrEmpty(password) || string.IsNullOrEmpty(storedHash))
+        if (password is null || string.IsNullOrEmpty(storedHash))
             return false;
 
         var parts = storedHash.Split('$');

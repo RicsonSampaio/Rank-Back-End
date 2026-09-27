@@ -10,6 +10,5 @@ public class UpdateUserRequest
     [Required, StringLength(150, MinimumLength = 2)]
     public string Name { get; init; } = string.Empty;
 
-    [MinLength(8)]
     public string? Password { get; init; }
 }

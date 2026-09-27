@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.DependencyInjection;
 using Rank.Application.App;
 using Rank.Core.DTO.Request.Users;
-using Rank.Core.Service;
+using Rank.Core.Helper;
 
 namespace Rank.WebAPI.Controllers;
 
@@ -16,54 +16,54 @@ public class UsersController : BaseController
 
     [AllowAnonymous]
     [HttpPost]
-    public async Task<IActionResult> Create([FromBody] CreateUserRequest request, CancellationToken cancellationToken)
+    public async Task<IActionResult> Create([FromBody] CreateUserRequest request)
     {
         try
         {
             var userApp = _provider.GetRequiredService<UserApp>();
-            var user = await userApp.CreateAsync(request, cancellationToken);
+            var user = await userApp.CreateAsync(request);
             return CreatedAtAction(nameof(GetById), new { id = user.Id }, user);
         }
-        catch (EmailAlreadyInUseException ex)
+        catch (Exception ex) when (UserHelper.IsEmailAlreadyInUse(ex))
         {
-            return Conflict(new { message = ex.Message });
+            return Conflict(new { message = UserHelper.EmailAlreadyInUseMessage });
         }
     }
 
     [HttpGet]
-    public async Task<IActionResult> GetAll(CancellationToken cancellationToken)
+    public async Task<IActionResult> GetAll()
     {
         var userApp = _provider.GetRequiredService<UserApp>();
-        return Ok(await userApp.GetAllAsync(cancellationToken));
+        return Ok(await userApp.GetAllAsync());
     }
 
     [HttpGet("{id:long}")]
-    public async Task<IActionResult> GetById(long id, CancellationToken cancellationToken)
+    public async Task<IActionResult> GetById(long id)
     {
         var userApp = _provider.GetRequiredService<UserApp>();
-        var user = await userApp.GetByIdAsync(id, cancellationToken);
+        var user = await userApp.GetByIdAsync(id);
         return user is null ? NotFound() : Ok(user);
     }
 
     [HttpPut("{id:long}")]
-    public async Task<IActionResult> Update(long id, [FromBody] UpdateUserRequest request, CancellationToken cancellationToken)
+    public async Task<IActionResult> Update(long id, [FromBody] UpdateUserRequest request)
     {
         try
         {
             var userApp = _provider.GetRequiredService<UserApp>();
-            var user = await userApp.UpdateAsync(id, request, cancellationToken);
+            var user = await userApp.UpdateAsync(id, request);
             return user is null ? NotFound() : Ok(user);
         }
-        catch (EmailAlreadyInUseException ex)
+        catch (Exception ex) when (UserHelper.IsEmailAlreadyInUse(ex))
         {
-            return Conflict(new { message = ex.Message });
+            return Conflict(new { message = UserHelper.EmailAlreadyInUseMessage });
         }
     }
 
     [HttpDelete("{id:long}")]
-    public async Task<IActionResult> Delete(long id, CancellationToken cancellationToken)
+    public async Task<IActionResult> Delete(long id)
     {
         var userApp = _provider.GetRequiredService<UserApp>();
-        return await userApp.DeleteAsync(id, cancellationToken) ? NoContent() : NotFound();
+        return await userApp.DeleteAsync(id) ? NoContent() : NotFound();
     }
 }

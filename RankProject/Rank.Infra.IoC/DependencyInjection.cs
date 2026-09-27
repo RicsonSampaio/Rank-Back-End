@@ -14,11 +14,17 @@ public static class DependencyInjection
     {
         DBDapperComponent.Configure(configuration);
         services.AddSingleton<UserRepository>();
+        services.AddSingleton<OrganizacaoRepository>();
+        services.AddSingleton<ColetivoRepository>();
         services.AddSingleton<TokenGenerator>();
         services.AddScoped<AccountService>();
         services.AddScoped<AccountApp>();
         services.AddScoped<UserService>();
         services.AddScoped<UserApp>();
+        services.AddScoped<OrganizacaoService>();
+        services.AddScoped<OrganizacaoApp>();
+        services.AddScoped<ColetivoService>();
+        services.AddScoped<ColetivoApp>();
         return services;
     }
 }

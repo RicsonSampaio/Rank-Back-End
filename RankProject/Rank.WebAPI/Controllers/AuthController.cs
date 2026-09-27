@@ -15,10 +15,10 @@ public class AuthController : BaseController
 
     [AllowAnonymous]
     [HttpPost("authenticate")]
-    public async Task<IActionResult> Authenticate([FromBody] LoginRequest request, CancellationToken cancellationToken)
+    public async Task<IActionResult> Authenticate([FromBody] LoginRequest request)
     {
         var accountApp = _provider.GetRequiredService<AccountApp>();
-        var token = await accountApp.GenerateTokenAsync(request, cancellationToken);
+        var token = await accountApp.GenerateTokenAsync(request);
         return token is null ? Unauthorized(new { message = "Credenciais inválidas." }) : Ok(token);
     }
 }
