@@ -6,11 +6,11 @@ namespace Rank.WebAPI.Authentication;
 public class CurrentUser
 {
     public bool IsAuthenticated { get; }
-    public long Id { get; }
+    public int Id { get; }
     public string Email { get; } = string.Empty;
     public string UserName { get; } = string.Empty;
     public bool Admin { get; }
-    public long? IdOrganizacao { get; }
+    public int? IdOrganizacao { get; }
     public string? FotoAccount { get; }
 
     public CurrentUser(IServiceProvider provider)
@@ -21,7 +21,7 @@ public class CurrentUser
         if (!IsAuthenticated || user is null)
             return;
 
-        if (long.TryParse(user.FindFirst(JwtRegisteredClaimNames.Sub)?.Value,
+        if (int.TryParse(user.FindFirst(JwtRegisteredClaimNames.Sub)?.Value,
             NumberStyles.Integer, CultureInfo.InvariantCulture, out var id))
             Id = id;
 
@@ -29,7 +29,7 @@ public class CurrentUser
         UserName = user.FindFirst("name")?.Value ?? string.Empty;
         Admin = bool.TryParse(user.FindFirst("admin")?.Value, out var admin) && admin;
 
-        if (long.TryParse(user.FindFirst("idOrganizacao")?.Value,
+        if (int.TryParse(user.FindFirst("idOrganizacao")?.Value,
             NumberStyles.Integer, CultureInfo.InvariantCulture, out var idOrganizacao))
             IdOrganizacao = idOrganizacao;
 

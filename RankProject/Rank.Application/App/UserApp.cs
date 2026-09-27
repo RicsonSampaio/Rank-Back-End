@@ -26,19 +26,19 @@ public class UserApp
         return userService.GetAllAsync();
     }
 
-    public Task<UserResponse?> GetByIdAsync(long id)
+    public Task<UserResponse?> GetByIdAsync(int id)
     {
         var userService = _provider.GetRequiredService<UserService>();
         return userService.GetByIdAsync(id);
     }
 
-    public Task<UserResponse?> UpdateAsync(long id, UpdateUserRequest request)
+    public Task<UserResponse?> UpdateAsync(int id, UpdateUserRequest request)
     {
         var userService = _provider.GetRequiredService<UserService>();
         return userService.UpdateAsync(id, request);
     }
 
-    public Task<bool> DeleteAsync(long id)
+    public Task<bool> DeleteAsync(int id)
     {
         var userService = _provider.GetRequiredService<UserService>();
         return userService.DeleteAsync(id);

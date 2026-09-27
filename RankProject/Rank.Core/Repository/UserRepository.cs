@@ -19,7 +19,7 @@ public class UserRepository : DBDapperComponent
         return await QuerySingleAsync<User>(commandText, new { email }).ConfigureAwait(false);
     }
 
-    public async Task<User?> GetByIdAsync(long id)
+    public async Task<User?> GetByIdAsync(int id)
     {
         string commandText = "SELECT " + cListFields + " FROM " + cTableName + " WHERE id = @id";
         return await QuerySingleAsync<User>(commandText, new { id }).ConfigureAwait(false);
@@ -50,7 +50,7 @@ public class UserRepository : DBDapperComponent
         return await ExecuteAsync(commandText, user).ConfigureAwait(false) > 0;
     }
 
-    public async Task<bool> DeleteAsync(long id)
+    public async Task<bool> DeleteAsync(int id)
     {
         string commandText = "DELETE FROM " + cTableName + " WHERE id = @id";
         return await ExecuteAsync(commandText, new { id }).ConfigureAwait(false) > 0;

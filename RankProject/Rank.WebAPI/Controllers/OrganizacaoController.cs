@@ -19,25 +19,25 @@ public class OrganizacaoController : BaseController
         return Ok(await organizacaoApp.GetAllAsync());
     }
 
-    [HttpGet("{id:long}")]
-    public async Task<IActionResult> GetById(long id)
+    [HttpGet("{id:int}")]
+    public async Task<IActionResult> GetById(int id)
     {
         var organizacaoApp = _provider.GetRequiredService<OrganizacaoApp>();
         var organizacao = await organizacaoApp.GetByIdAsync(id);
         return organizacao is null ? NotFound() : Ok(organizacao);
     }
 
-    [HttpPut("{id:long}")]
+    [HttpPut("{id:int}")]
     public async Task<IActionResult> Update(
-        long id, [FromBody] UpdateOrganizacaoRequest request)
+        int id, [FromBody] UpdateOrganizacaoRequest request)
     {
         var organizacaoApp = _provider.GetRequiredService<OrganizacaoApp>();
         var organizacao = await organizacaoApp.UpdateAsync(id, request);
         return organizacao is null ? NotFound() : Ok(organizacao);
     }
 
-    [HttpDelete("{id:long}")]
-    public async Task<IActionResult> Delete(long id)
+    [HttpDelete("{id:int}")]
+    public async Task<IActionResult> Delete(int id)
     {
         var organizacaoApp = _provider.GetRequiredService<OrganizacaoApp>();
         return await organizacaoApp.DeleteAsync(id) ? NoContent() : NotFound();

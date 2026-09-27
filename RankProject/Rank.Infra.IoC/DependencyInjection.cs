@@ -16,6 +16,8 @@ public static class DependencyInjection
         services.AddSingleton<UserRepository>();
         services.AddSingleton<OrganizacaoRepository>();
         services.AddSingleton<ColetivoRepository>();
+        services.AddSingleton<TarefaRepository>();
+        services.AddSingleton<MembroRepository>();
         services.AddSingleton<TokenGenerator>();
         services.AddScoped<AccountService>();
         services.AddScoped<AccountApp>();
@@ -25,6 +27,10 @@ public static class DependencyInjection
         services.AddScoped<OrganizacaoApp>();
         services.AddScoped<ColetivoService>();
         services.AddScoped<ColetivoApp>();
+        services.AddScoped<TarefaService>();
+        services.AddScoped<TarefaApp>();
+        services.AddScoped<MembroService>();
+        services.AddScoped<MembroApp>();
         return services;
     }
 }

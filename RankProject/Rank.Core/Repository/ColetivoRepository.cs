@@ -12,7 +12,7 @@ public class ColetivoRepository : DBDapperComponent
     {
     }
 
-    public async Task<Coletivo?> GetByIdAsync(long id)
+    public async Task<Coletivo?> GetByIdAsync(int id)
     {
         string commandText = "SELECT " + cListFields + " FROM " + cTableName + " WHERE id = @id";
         return await QuerySingleAsync<Coletivo>(commandText, new { id }).ConfigureAwait(false);
@@ -24,14 +24,14 @@ public class ColetivoRepository : DBDapperComponent
         return await QueryListAsync<Coletivo>(commandText).ConfigureAwait(false);
     }
 
-    public async Task<IReadOnlyList<Coletivo>> GetByOrganizacaoAsync(long idOrganizacao)
+    public async Task<IReadOnlyList<Coletivo>> GetByOrganizacaoAsync(int idOrganizacao)
     {
         string commandText = "SELECT " + cListFields + " FROM " + cTableName +
             " WHERE idOrganizacao = @idOrganizacao ORDER BY id";
         return await QueryListAsync<Coletivo>(commandText, new { idOrganizacao }).ConfigureAwait(false);
     }
 
-    public async Task<IReadOnlyList<Coletivo>> GetByUsuarioVinculadoAsync(long idUsuario)
+    public async Task<IReadOnlyList<Coletivo>> GetByUsuarioVinculadoAsync(int idUsuario)
     {
         string commandText = "SELECT " + cListFields + " FROM " + cTableName +
             " WHERE EXISTS (SELECT 1 FROM coletivo_usuario cu WHERE cu.idColetivo = " + cTableName +
@@ -39,7 +39,7 @@ public class ColetivoRepository : DBDapperComponent
         return await QueryListAsync<Coletivo>(commandText, new { idUsuario }).ConfigureAwait(false);
     }
 
-    public async Task<long> CreateAsync(Coletivo coletivo)
+    public async Task<int> CreateAsync(Coletivo coletivo)
     {
         string commandText = "INSERT INTO " + cTableName +
             " (nome, dataCriacao, dataAtualizacao, idOrganizacao, idTipoColetivo, logo) " +
@@ -54,7 +54,7 @@ public class ColetivoRepository : DBDapperComponent
         return await ExecuteAsync(commandText, coletivo).ConfigureAwait(false) > 0;
     }
 
-    public async Task<bool> DeleteAsync(long id)
+    public async Task<bool> DeleteAsync(int id)
     {
         string commandText = "DELETE FROM " + cTableName + " WHERE id = @id";
         return await ExecuteAsync(commandText, new { id }).ConfigureAwait(false) > 0;

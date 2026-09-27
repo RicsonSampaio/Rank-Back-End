@@ -20,20 +20,20 @@ public class OrganizacaoApp
         return organizacaoService.GetAllAsync();
     }
 
-    public Task<OrganizacaoResponse?> GetByIdAsync(long id)
+    public Task<OrganizacaoResponse?> GetByIdAsync(int id)
     {
         var organizacaoService = _provider.GetRequiredService<OrganizacaoService>();
         return organizacaoService.GetByIdAsync(id);
     }
 
     public Task<OrganizacaoResponse?> UpdateAsync(
-        long id, UpdateOrganizacaoRequest request)
+        int id, UpdateOrganizacaoRequest request)
     {
         var organizacaoService = _provider.GetRequiredService<OrganizacaoService>();
         return organizacaoService.UpdateAsync(id, request);
     }
 
-    public Task<bool> DeleteAsync(long id)
+    public Task<bool> DeleteAsync(int id)
     {
         var organizacaoService = _provider.GetRequiredService<OrganizacaoService>();
         return organizacaoService.DeleteAsync(id);

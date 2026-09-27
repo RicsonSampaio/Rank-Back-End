@@ -18,7 +18,7 @@ public class BaseController : Controller
     }
 
     [NonAction]
-    public long GetUserId()
+    public int GetUserId()
     {
         return _currentUser.Id;
     }
@@ -42,7 +42,7 @@ public class BaseController : Controller
     }
 
     [NonAction]
-    public long? GetOrganizacaoId()
+    public int? GetOrganizacaoId()
     {
         return _currentUser.IdOrganizacao;
     }

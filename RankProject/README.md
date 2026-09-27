@@ -1,6 +1,6 @@
 # Rank
 
-API .NET 8 para um projeto pessoal. A estrutura segue o fluxo do ConstruCode: `Controller → App → Service → Repository`. Controllers, Apps e Services recebem `IServiceProvider` no construtor e resolvem as classes concretas com `GetRequiredService<T>()` dentro dos métodos. O repositório usa Dapper. Os casos de uso atuais incluem usuários, login, organizações e coletivos.
+API .NET 8 para um projeto pessoal. A estrutura segue o fluxo do ConstruCode: `Controller → App → Service → Repository`. Controllers, Apps e Services recebem `IServiceProvider` no construtor e resolvem as classes concretas com `GetRequiredService<T>()` dentro dos métodos. O repositório usa Dapper. Os casos de uso atuais incluem usuários, login, organizações, coletivos, membros e tarefas.
 
 ## Projetos
 
@@ -16,9 +16,11 @@ Como o ConstruCode, esta versão usa MySQL. Para senhas novas, usa PBKDF2-SHA256
 
 Em `Rank.Core.Repository`, cada método monta o `commandText` e chama `QuerySingleAsync`, `QueryListAsync`, `ExecuteAsync`, `InsertAndGetIdAsync` ou `QuerySingleTransactionAsync` da base. A abertura e o descarte da conexão, assim como o início, commit e rollback da transação, ficam em `DBDapperComponent`.
 
+Todos os IDs usam `int` na aplicação (`int?` quando aceitam `null`). No SQL, as chaves primárias com auto incremento usam `INT(11)` e os demais IDs usam `INT`, preservando os valores padrão e a nulabilidade de cada coluna. O script de criação não converte os tipos de tabelas já existentes; essa alteração precisa ser feita separadamente no banco com `ALTER TABLE`.
+
 ## Executar localmente
 
-1. Execute o script completo [Sqls/001_rank_local.sql](Sqls/001_rank_local.sql) no MySQL local. Ele cria o banco `rank_local`, seleciona esse banco e cria as tabelas `organizacao`, `usuario` e `coletivo`, com engine InnoDB para suportar transações. O script usa `IF NOT EXISTS`: pode ser executado novamente sem apagar dados, mas não altera a estrutura de tabelas existentes.
+1. Execute o script completo [Sqls/001_rank_local.sql](Sqls/001_rank_local.sql) no MySQL local. Ele cria o banco `rank_local`, seleciona esse banco e cria as tabelas `organizacao`, `usuario`, `coletivo`, `coletivo_usuario` e `tarefa`, com engine InnoDB para suportar transações. O script usa `IF NOT EXISTS`: pode ser executado novamente sem apagar dados, mas não altera a estrutura de tabelas existentes.
 2. A conexão e uma chave JWT privada já foram salvas nos *user secrets* do .NET nesta máquina. Para configurar outra máquina, rode os comandos abaixo dentro da pasta deste repositório:
 
    ```powershell
@@ -69,6 +71,16 @@ Em `Rank.Core.Repository`, cada método monta o `commandText` e chama `QuerySing
 | `GET /api/coletivo/{id}` | JWT | Consulta um coletivo |
 | `PUT /api/coletivo/{id}` | JWT | Atualiza nome e logo |
 | `DELETE /api/coletivo/{id}` | JWT | Exclui um coletivo e retorna `204` |
+| `POST /api/membro` | JWT | Vincula um usuário pelo email a um coletivo e retorna `201` |
+| `GET /api/membro?idColetivo={id}` | JWT | Lista membros do coletivo informado |
+| `GET /api/membro/{id}` | JWT | Consulta um vínculo de membro |
+| `PUT /api/membro/{id}` | JWT | Atualiza o coletivo e o usuário do vínculo, identificado pelo email |
+| `DELETE /api/membro/{id}` | JWT | Exclui o vínculo e retorna `204` |
+| `POST /api/tarefa` | JWT | Cria uma tarefa e retorna `201` |
+| `GET /api/tarefa?idColetivo={id}` | JWT | Lista as tarefas do coletivo informado |
+| `GET /api/tarefa/{id}` | JWT | Consulta uma tarefa |
+| `PUT /api/tarefa/{id}` | JWT | Atualiza uma tarefa |
+| `DELETE /api/tarefa/{id}` | JWT | Exclui uma tarefa e retorna `204` |
 
 Depois de cadastrar, chame `POST https://localhost:7199/api/auth/authenticate` com JSON:
 
@@ -147,6 +159,47 @@ O front continua chamando `GET /api/coletivo` sem enviar filtros. A controller e
 - Os demais recebem os coletivos com a mesma organização do usuário e também aqueles vinculados ao seu ID na tabela `coletivo_usuario`.
 - O Service reúne as duas listas sem duplicar coletivos, ordenando por ID. Sem organização, o usuário ainda pode receber coletivos por vínculo. Sem acesso a nenhum coletivo, recebe uma lista vazia.
 
-O Repository apenas executa as consultas por organização e por vínculo, usando `EXISTS` para que vínculos repetidos não dupliquem os registros. Não há endpoints de gerenciamento de `coletivo_usuario` neste fluxo.
+O Repository apenas executa as consultas por organização e por vínculo, usando `EXISTS` para que vínculos repetidos não dupliquem os registros. Os vínculos são gerenciados pelo CRUD de membros.
+
+## Membros
+
+O CRUD segue `MembroController → MembroApp → MembroService → MembroRepository` e opera sobre `coletivo_usuario`. Todos os endpoints exigem JWT e são acessíveis a qualquer usuário autenticado nesta etapa.
+
+No cadastro e na edição, envie:
+
+```json
+{ "idColetivo": 1, "email": "membro@exemplo.com" }
+```
+
+O Service normaliza o email e busca o usuário cadastrado. Se não encontrar, retorna `400` com `{ "message": "Este usuário ainda não está cadastrado no sistema." }`. Também confere a existência do coletivo: um coletivo inexistente retorna `400` com a mensagem correspondente. Quando ambos existem, grava apenas `idColetivo` e `idUsuario` no vínculo; o front não precisa informar o ID do usuário.
+
+`GET /api/membro?idColetivo=1` lista somente os membros desse coletivo. `idColetivo` é obrigatório e deve ser positivo. As respostas incluem `id` (ID do vínculo), `idColetivo`, `idUsuario`, `email`, `nome` e `fotoAccount`. Os dados de usuário são consultados por JOIN e não são duplicados na tabela de vínculos.
+
+Nas rotas `/{id}`, o ID é o registro de `coletivo_usuario`, não o ID do usuário. Vínculo inexistente retorna `404`. Excluir um membro remove somente a associação; a conta do usuário continua no sistema. A associação passa a ser considerada automaticamente pela listagem de coletivos do usuário vinculado.
+
+## Tarefas
+
+O CRUD segue `TarefaController → TarefaApp → TarefaService → TarefaRepository`. Todos os endpoints exigem JWT. Para listar, envie o parâmetro obrigatório na query, por exemplo `GET /api/tarefa?idColetivo=1`. A listagem retorna somente as tarefas desse coletivo, ordenadas por ID. Não há filtros adicionais de usuário, organização ou privacidade nesta etapa.
+
+Exemplo de cadastro:
+
+```json
+{
+  "titulo": "Minha primeira tarefa",
+  "idColetivo": 1,
+  "descricao": "Descrição opcional",
+  "userListParticipantes": "1,2"
+}
+```
+
+Os DTOs de cadastro e edição aceitam os campos da tabela, exceto `id`, `dataCriacao` e `dataAtualizacao`. IDs seguem os valores padrão do script, incluindo `idRelevancia = 1`; IDs e datas opcionais também aceitam `null` conforme a tabela. `titulo` é obrigatório; `userListParticipantes` não aceita `null`, mas pode ser uma string vazia e começa vazio quando omitido. As listas de usuários são armazenadas como texto, sem validação dos IDs ou interpretação dos valores separados por vírgula. `idUsuarioCriacao` vem da request e começa em `0` quando omitido.
+
+`idColetivo` também faz parte dos DTOs de cadastro, edição e resposta; começa em `0` quando omitido no cadastro ou edição. Na tabela, é `INT NOT NULL DEFAULT 0`, logo após `id`. Caso a tabela `tarefa` já exista sem essa coluna, o `CREATE TABLE IF NOT EXISTS` não a adiciona. Nesse caso, execute separadamente:
+
+```sql
+ALTER TABLE rank_local.tarefa ADD COLUMN idColetivo INT NOT NULL DEFAULT 0 AFTER id;
+```
+
+O Service define `dataCriacao` em UTC e deixa `dataAtualizacao` como `null` no cadastro. Na edição, preserva a data de criação e preenche a data de atualização em UTC. O `PUT` recebe os dados completos da tarefa: campos omitidos assumem os valores padrão do DTO. Consulta, edição ou exclusão de um ID inexistente retornam `404`.
 
 O token expira após 8 horas por padrão. A exclusão da conta invalida seu acesso aos endpoints protegidos. No desenvolvimento, o CORS permite `http://localhost:5173` e `http://localhost:3000`; ajuste `Cors:AllowedOrigins` para a origem real do seu front-end. A senha do banco e a chave JWT não ficam versionadas.

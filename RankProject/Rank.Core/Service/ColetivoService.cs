@@ -17,7 +17,7 @@ public class ColetivoService
     }
 
     public async Task<ColetivoResponse> CreateAsync(
-        CreateColetivoRequest request, long idOrganizacao)
+        CreateColetivoRequest request, int idOrganizacao)
     {
         ArgumentNullException.ThrowIfNull(request);
         Validator.ValidateObject(request, new ValidationContext(request), validateAllProperties: true);
@@ -32,7 +32,7 @@ public class ColetivoService
             DataCriacao = now,
             DataAtualizacao = now,
             IdOrganizacao = idOrganizacao,
-            IdTipoColetivo = (long)request.IdTipoColetivo,
+            IdTipoColetivo = (int)request.IdTipoColetivo,
             Logo = request.Logo?.Trim()
         };
         var id = await coletivoRepository.CreateAsync(coletivo).ConfigureAwait(false);
@@ -40,7 +40,7 @@ public class ColetivoService
             coletivo.IdOrganizacao, coletivo.IdTipoColetivo, coletivo.Logo);
     }
 
-    public async Task<IReadOnlyList<ColetivoResponse>> GetAllAsync(long idUsuario)
+    public async Task<IReadOnlyList<ColetivoResponse>> GetAllAsync(int idUsuario)
     {
         var userRepository = _provider.GetRequiredService<UserRepository>();
         var user = await userRepository.GetByIdAsync(idUsuario).ConfigureAwait(false);
@@ -67,7 +67,7 @@ public class ColetivoService
             .ToArray();
     }
 
-    public async Task<ColetivoResponse?> GetByIdAsync(long id)
+    public async Task<ColetivoResponse?> GetByIdAsync(int id)
     {
         var coletivoRepository = _provider.GetRequiredService<ColetivoRepository>();
         var coletivo = await coletivoRepository.GetByIdAsync(id).ConfigureAwait(false);
@@ -75,7 +75,7 @@ public class ColetivoService
     }
 
     public async Task<ColetivoResponse?> UpdateAsync(
-        long id, UpdateColetivoRequest request)
+        int id, UpdateColetivoRequest request)
     {
         var coletivoRepository = _provider.GetRequiredService<ColetivoRepository>();
         var current = await coletivoRepository.GetByIdAsync(id).ConfigureAwait(false);
@@ -96,7 +96,7 @@ public class ColetivoService
             ? ToResponse(coletivo) : null;
     }
 
-    public Task<bool> DeleteAsync(long id)
+    public Task<bool> DeleteAsync(int id)
     {
         var coletivoRepository = _provider.GetRequiredService<ColetivoRepository>();
         return coletivoRepository.DeleteAsync(id);

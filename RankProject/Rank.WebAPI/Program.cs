@@ -61,7 +61,7 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             OnTokenValidated = async context =>
             {
                 var value = context.Principal?.FindFirst(System.IdentityModel.Tokens.Jwt.JwtRegisteredClaimNames.Sub)?.Value;
-                if (!long.TryParse(value, out var id))
+                if (!int.TryParse(value, out var id))
                 {
                     context.Fail("Token sem usuário válido.");
                     return;

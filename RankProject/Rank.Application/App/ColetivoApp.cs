@@ -15,32 +15,32 @@ public class ColetivoApp
     }
 
     public Task<ColetivoResponse> CreateAsync(
-        CreateColetivoRequest request, long idOrganizacao)
+        CreateColetivoRequest request, int idOrganizacao)
     {
         var coletivoService = _provider.GetRequiredService<ColetivoService>();
         return coletivoService.CreateAsync(request, idOrganizacao);
     }
 
-    public Task<IReadOnlyList<ColetivoResponse>> GetAllAsync(long idUsuario)
+    public Task<IReadOnlyList<ColetivoResponse>> GetAllAsync(int idUsuario)
     {
         var coletivoService = _provider.GetRequiredService<ColetivoService>();
         return coletivoService.GetAllAsync(idUsuario);
     }
 
-    public Task<ColetivoResponse?> GetByIdAsync(long id)
+    public Task<ColetivoResponse?> GetByIdAsync(int id)
     {
         var coletivoService = _provider.GetRequiredService<ColetivoService>();
         return coletivoService.GetByIdAsync(id);
     }
 
     public Task<ColetivoResponse?> UpdateAsync(
-        long id, UpdateColetivoRequest request)
+        int id, UpdateColetivoRequest request)
     {
         var coletivoService = _provider.GetRequiredService<ColetivoService>();
         return coletivoService.UpdateAsync(id, request);
     }
 
-    public Task<bool> DeleteAsync(long id)
+    public Task<bool> DeleteAsync(int id)
     {
         var coletivoService = _provider.GetRequiredService<ColetivoService>();
         return coletivoService.DeleteAsync(id);

@@ -32,25 +32,25 @@ public class ColetivoController : BaseController
         return Ok(await coletivoApp.GetAllAsync(GetUserId()));
     }
 
-    [HttpGet("{id:long}")]
-    public async Task<IActionResult> GetById(long id)
+    [HttpGet("{id:int}")]
+    public async Task<IActionResult> GetById(int id)
     {
         var coletivoApp = _provider.GetRequiredService<ColetivoApp>();
         var coletivo = await coletivoApp.GetByIdAsync(id);
         return coletivo is null ? NotFound() : Ok(coletivo);
     }
 
-    [HttpPut("{id:long}")]
+    [HttpPut("{id:int}")]
     public async Task<IActionResult> Update(
-        long id, [FromBody] UpdateColetivoRequest request)
+        int id, [FromBody] UpdateColetivoRequest request)
     {
         var coletivoApp = _provider.GetRequiredService<ColetivoApp>();
         var coletivo = await coletivoApp.UpdateAsync(id, request);
         return coletivo is null ? NotFound() : Ok(coletivo);
     }
 
-    [HttpDelete("{id:long}")]
-    public async Task<IActionResult> Delete(long id)
+    [HttpDelete("{id:int}")]
+    public async Task<IActionResult> Delete(int id)
     {
         var coletivoApp = _provider.GetRequiredService<ColetivoApp>();
         return await coletivoApp.DeleteAsync(id) ? NoContent() : NotFound();

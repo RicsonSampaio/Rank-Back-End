@@ -37,14 +37,14 @@ public class UserService
         return (await userRepository.GetAllAsync()).Select(ToResponse).ToArray();
     }
 
-    public async Task<UserResponse?> GetByIdAsync(long id)
+    public async Task<UserResponse?> GetByIdAsync(int id)
     {
         var userRepository = _provider.GetRequiredService<UserRepository>();
         var user = await userRepository.GetByIdAsync(id);
         return user is null ? null : ToResponse(user);
     }
 
-    public async Task<UserResponse?> UpdateAsync(long id, UpdateUserRequest request)
+    public async Task<UserResponse?> UpdateAsync(int id, UpdateUserRequest request)
     {
         var userRepository = _provider.GetRequiredService<UserRepository>();
         var current = await userRepository.GetByIdAsync(id);
@@ -66,7 +66,7 @@ public class UserService
         return await userRepository.UpdateAsync(updated) ? ToResponse(updated) : null;
     }
 
-    public Task<bool> DeleteAsync(long id)
+    public Task<bool> DeleteAsync(int id)
     {
         var userRepository = _provider.GetRequiredService<UserRepository>();
         return userRepository.DeleteAsync(id);

@@ -39,7 +39,7 @@ public class OrganizacaoService
         return organizacoes.Select(ToResponse).ToArray();
     }
 
-    public async Task<OrganizacaoResponse?> GetByIdAsync(long id)
+    public async Task<OrganizacaoResponse?> GetByIdAsync(int id)
     {
         var organizacaoRepository = _provider.GetRequiredService<OrganizacaoRepository>();
         var organizacao = await organizacaoRepository.GetByIdAsync(id).ConfigureAwait(false);
@@ -47,7 +47,7 @@ public class OrganizacaoService
     }
 
     public async Task<OrganizacaoResponse?> UpdateAsync(
-        long id, UpdateOrganizacaoRequest request)
+        int id, UpdateOrganizacaoRequest request)
     {
         var organizacaoRepository = _provider.GetRequiredService<OrganizacaoRepository>();
         var current = await organizacaoRepository.GetByIdAsync(id).ConfigureAwait(false);
@@ -65,7 +65,7 @@ public class OrganizacaoService
             ? ToResponse(organizacao) : null;
     }
 
-    public Task<bool> DeleteAsync(long id)
+    public Task<bool> DeleteAsync(int id)
     {
         var organizacaoRepository = _provider.GetRequiredService<OrganizacaoRepository>();
         return organizacaoRepository.DeleteAsync(id);

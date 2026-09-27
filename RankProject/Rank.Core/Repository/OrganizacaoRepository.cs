@@ -12,7 +12,7 @@ public class OrganizacaoRepository : DBDapperComponent
     {
     }
 
-    public async Task<Organizacao?> GetByIdAsync(long id)
+    public async Task<Organizacao?> GetByIdAsync(int id)
     {
         string commandText = "SELECT " + cListFields + " FROM " + cTableName + " WHERE id = @id";
         return await QuerySingleAsync<Organizacao>(commandText, new { id }).ConfigureAwait(false);
@@ -24,7 +24,7 @@ public class OrganizacaoRepository : DBDapperComponent
         return await QueryListAsync<Organizacao>(commandText).ConfigureAwait(false);
     }
 
-    public async Task<long> CreateAsync(Organizacao organizacao)
+    public async Task<int> CreateAsync(Organizacao organizacao)
     {
         string commandText = "INSERT INTO " + cTableName +
             " (nome, dataCriacao, logo) VALUES (@Nome, @DataCriacao, @Logo)";
@@ -37,7 +37,7 @@ public class OrganizacaoRepository : DBDapperComponent
         return await ExecuteAsync(commandText, organizacao).ConfigureAwait(false) > 0;
     }
 
-    public async Task<bool> DeleteAsync(long id)
+    public async Task<bool> DeleteAsync(int id)
     {
         string commandText = "DELETE FROM " + cTableName + " WHERE id = @id";
         return await ExecuteAsync(commandText, new { id }).ConfigureAwait(false) > 0;

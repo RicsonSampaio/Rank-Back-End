@@ -37,16 +37,16 @@ public class UsersController : BaseController
         return Ok(await userApp.GetAllAsync());
     }
 
-    [HttpGet("{id:long}")]
-    public async Task<IActionResult> GetById(long id)
+    [HttpGet("{id:int}")]
+    public async Task<IActionResult> GetById(int id)
     {
         var userApp = _provider.GetRequiredService<UserApp>();
         var user = await userApp.GetByIdAsync(id);
         return user is null ? NotFound() : Ok(user);
     }
 
-    [HttpPut("{id:long}")]
-    public async Task<IActionResult> Update(long id, [FromBody] UpdateUserRequest request)
+    [HttpPut("{id:int}")]
+    public async Task<IActionResult> Update(int id, [FromBody] UpdateUserRequest request)
     {
         try
         {
@@ -60,8 +60,8 @@ public class UsersController : BaseController
         }
     }
 
-    [HttpDelete("{id:long}")]
-    public async Task<IActionResult> Delete(long id)
+    [HttpDelete("{id:int}")]
+    public async Task<IActionResult> Delete(int id)
     {
         var userApp = _provider.GetRequiredService<UserApp>();
         return await userApp.DeleteAsync(id) ? NoContent() : NotFound();

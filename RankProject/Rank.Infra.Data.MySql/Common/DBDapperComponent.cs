@@ -54,14 +54,14 @@ public abstract class DBDapperComponent
             new CommandDefinition(commandText, parameters)).ConfigureAwait(false);
     }
 
-    protected async Task<long> InsertAndGetIdAsync(
+    protected async Task<int> InsertAndGetIdAsync(
         string commandText, object parameters)
     {
         await using var connection = CreateConnection();
         await connection.OpenAsync().ConfigureAwait(false);
         await connection.ExecuteAsync(
             new CommandDefinition(commandText, parameters)).ConfigureAwait(false);
-        return await connection.ExecuteScalarAsync<long>(
+        return await connection.ExecuteScalarAsync<int>(
             new CommandDefinition("SELECT LAST_INSERT_ID()")).ConfigureAwait(false);
     }
 
