@@ -32,7 +32,7 @@ public class ColetivoService
             DataCriacao = now,
             DataAtualizacao = now,
             IdOrganizacao = idOrganizacao,
-            IdTipoColetivo = (int)request.IdTipoColetivo,
+            IdTipoColetivo = request.IdTipoColetivo,
             Logo = request.Logo?.Trim()
         };
         var id = await coletivoRepository.CreateAsync(coletivo).ConfigureAwait(false);
@@ -77,6 +77,8 @@ public class ColetivoService
     public async Task<ColetivoResponse?> UpdateAsync(
         int id, UpdateColetivoRequest request)
     {
+        ArgumentNullException.ThrowIfNull(request);
+        Validator.ValidateObject(request, new ValidationContext(request), validateAllProperties: true);
         var coletivoRepository = _provider.GetRequiredService<ColetivoRepository>();
         var current = await coletivoRepository.GetByIdAsync(id).ConfigureAwait(false);
         if (current is null)
@@ -89,7 +91,7 @@ public class ColetivoService
             DataCriacao = current.DataCriacao,
             DataAtualizacao = DateTime.UtcNow,
             IdOrganizacao = current.IdOrganizacao,
-            IdTipoColetivo = current.IdTipoColetivo,
+            IdTipoColetivo = request.IdTipoColetivo,
             Logo = request.Logo?.Trim()
         };
         return await coletivoRepository.UpdateAsync(coletivo).ConfigureAwait(false)

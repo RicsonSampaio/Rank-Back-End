@@ -50,7 +50,8 @@ public class ColetivoRepository : DBDapperComponent
     public async Task<bool> UpdateAsync(Coletivo coletivo)
     {
         string commandText = "UPDATE " + cTableName +
-            " SET nome = @Nome, logo = @Logo, dataAtualizacao = @DataAtualizacao WHERE id = @Id";
+            " SET nome = @Nome, logo = @Logo, idTipoColetivo = @IdTipoColetivo, " +
+            "dataAtualizacao = @DataAtualizacao WHERE id = @Id";
         return await ExecuteAsync(commandText, coletivo).ConfigureAwait(false) > 0;
     }
 

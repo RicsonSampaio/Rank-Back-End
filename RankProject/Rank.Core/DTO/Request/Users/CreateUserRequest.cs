@@ -5,11 +5,11 @@ namespace Rank.Core.DTO.Request.Users;
 public class CreateUserRequest
 {
     [Required, EmailAddress, StringLength(320)]
-    public string Email { get; init; } = string.Empty;
+    public string Email { get; set; } = string.Empty;
 
     [Required, StringLength(150, MinimumLength = 2)]
-    public string Name { get; init; } = string.Empty;
+    public string Name { get; set; } = string.Empty;
 
     [Required(AllowEmptyStrings = true)]
-    public string Password { get; init; } = string.Empty;
+    public string Password { get; set; } = string.Empty;
 }

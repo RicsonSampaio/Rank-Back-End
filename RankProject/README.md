@@ -69,7 +69,7 @@ Todos os IDs usam `int` na aplicação (`int?` quando aceitam `null`). No SQL, a
 | `POST /api/coletivo` | JWT com organização | Cria um coletivo na organização do token e retorna `201` |
 | `GET /api/coletivo` | JWT | Lista coletivos conforme admin, organização e vínculos do usuário |
 | `GET /api/coletivo/{id}` | JWT | Consulta um coletivo |
-| `PUT /api/coletivo/{id}` | JWT | Atualiza nome e logo |
+| `PUT /api/coletivo/{id}` | JWT | Atualiza nome, logo e tipo |
 | `DELETE /api/coletivo/{id}` | JWT | Exclui um coletivo e retorna `204` |
 | `POST /api/membro` | JWT | Vincula um usuário pelo email a um coletivo e retorna `201` |
 | `GET /api/membro?idColetivo={id}` | JWT | Lista membros do coletivo informado |
@@ -131,7 +131,7 @@ Para criar, envie:
 { "nome": "Meu coletivo", "idTipoColetivo": 3, "logo": "https://exemplo.com/logo.png" }
 ```
 
-`nome` é obrigatório e aceita até 150 caracteres; `logo` é opcional e aceita até 2048. No cadastro, `idTipoColetivo` é obrigatório e usa o enum `Rank.Core.Enum.TipoColetivo`:
+`nome` é obrigatório e aceita até 150 caracteres; `logo` é opcional e aceita até 2048. No cadastro e na edição, `idTipoColetivo` é obrigatório e usa o enum `Rank.Core.Enum.TipoColetivo`:
 
 | Valor | Tipo |
 | --- | --- |
@@ -141,15 +141,15 @@ Para criar, envie:
 | 4 | Alianca |
 | 5 | Coalizao |
 
-O front envia o número do tipo escolhido; omitir `idTipoColetivo`, enviar `0` ou um valor fora do enum retorna `400`. O Service grava esse valor, sem aplicar um tipo padrão. O controller continua obtendo `idOrganizacao` exclusivamente por `GetOrganizacaoId()`: esse campo não faz parte dos DTOs de entrada. Sem uma organização válida no token, o cadastro retorna `403`; faça login novamente para obter a claim, caso esteja usando um token antigo.
+O front envia o número do tipo escolhido; omitir `idTipoColetivo`, enviar `0` ou um valor fora do enum retorna `400`. A propriedade `IdTipoColetivo` usa `TipoColetivo` nos DTOs de entrada, na entidade e no DTO de resposta, e o Service repassa o enum diretamente. O JSON continua usando números e a coluna no banco continua sendo `INT`. O Service grava esse valor, sem aplicar um tipo padrão. O controller continua obtendo `idOrganizacao` exclusivamente por `GetOrganizacaoId()`: esse campo não faz parte dos DTOs de entrada. Sem uma organização válida no token, o cadastro retorna `403`; faça login novamente para obter a claim, caso esteja usando um token antigo.
 
-Para atualizar, envie `nome` e `logo`; o tipo permanece o definido no cadastro:
+Para atualizar, envie `nome`, `idTipoColetivo` e `logo`:
 
 ```json
-{ "nome": "Meu coletivo atualizado", "logo": null }
+{ "nome": "Meu coletivo atualizado", "idTipoColetivo": 4, "logo": null }
 ```
 
-As datas são definidas pelo Service em UTC. A atualização altera nome, logo e `dataAtualizacao`, preservando `dataCriacao`, organização e tipo. Enviar `logo: null` remove o link. Consulta, atualização e exclusão de um coletivo inexistente retornam `404`. Consulta por ID, atualização e exclusão continuam acessíveis a qualquer usuário autenticado, sem filtro de organização.
+As datas são definidas pelo Service em UTC. A atualização altera nome, logo, tipo e `dataAtualizacao`, preservando `dataCriacao` e organização. Enviar `logo: null` remove o link. Consulta, atualização e exclusão de um coletivo inexistente retornam `404`. Consulta por ID, atualização e exclusão continuam acessíveis a qualquer usuário autenticado, sem filtro de organização.
 
 ### Listagem de coletivos
 
