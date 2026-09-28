@@ -1,0 +1,12 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+  <ItemGroup>
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
+    <ProjectReference Include="..\Rank.Application\Rank.Application.csproj" />
+    <ProjectReference Include="..\Rank.Infra.Data.MySql\Rank.Infra.Data.MySql.csproj" />
+  </ItemGroup>
+</Project>
