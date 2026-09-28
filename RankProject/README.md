@@ -52,6 +52,10 @@ Todos os IDs usam `int` na aplicação (`int?` quando aceitam `null`). No SQL, a
 
    A API calcula o hash da senha e executa um único comando SQL dentro de uma transação: cria uma organização com o mesmo nome do usuário, obtém seu ID com `LAST_INSERT_ID()` e insere a conta com `idOrganizacao` preenchido. A resposta inclui esse vínculo. Se qualquer operação falhar, os dois cadastros são desfeitos; email duplicado continua retornando `409`, sem deixar uma organização criada por esse cadastro.
 
+## Usuários de teste
+
+O final de [Sqls/001_rank_local.sql](Sqls/001_rank_local.sql) cadastra 24 usuários de teste: 7 líderes de Grupos e 17 líderes de Guildas. Nos Grupos, `name` usa o nome informado na lista; nas Guildas, usa o nome derivado do email, como `Ousey` para `ousey@gmail.com`. A senha temporária é `123`, armazenada como PBKDF2-SHA256 com salt individual. Os `INSERT IGNORE` preservam contas já cadastradas. Na mesma transação, o script cria uma organização com o `name` de cada usuário ainda sem organização e atualiza seu `idOrganizacao` com `LAST_INSERT_ID()`. Depois, cria um coletivo para cada líder com o `idOrganizacao` de sua conta: `Grupo = 3` e `Guilda = 1`. As logos sem URL correspondente ficam `NULL`; executar novamente o script não duplica coletivos com o mesmo nome na mesma organização. Vínculos de membros em `coletivo_usuario` ficam para depois.
+
 ## Endpoints
 
 | Método e rota | Acesso | Resultado |
