@@ -21,33 +21,21 @@ Todos os IDs usam `int` na aplicação (`int?` quando aceitam `null`). No SQL, a
 ## Executar localmente
 
 1. Execute o script completo [Sqls/001_rank_local.sql](Sqls/001_rank_local.sql) no MySQL local. Ele cria o banco `rank_local`, seleciona esse banco e cria as tabelas `organizacao`, `usuario`, `coletivo`, `coletivo_usuario` e `tarefa`, com engine InnoDB para suportar transações. O script usa `IF NOT EXISTS`: pode ser executado novamente sem apagar dados, mas não altera a estrutura de tabelas existentes.
-2. A conexão e uma chave JWT privada já foram salvas nos *user secrets* do .NET nesta máquina. Para configurar outra máquina, rode os comandos abaixo dentro da pasta deste repositório:
-
-   ```powershell
-   dotnet user-secrets set "ConnectionStrings:Rank" "Server=localhost;Port=3306;Database=rank_local;User ID=SEU_USUARIO;Password=SUA_SENHA;SslMode=None;AllowPublicKeyRetrieval=True" --project Rank.WebAPI
-   $bytes = New-Object byte[] 48
-   $gerador = [Security.Cryptography.RandomNumberGenerator]::Create()
-   $gerador.GetBytes($bytes)
-   $gerador.Dispose()
-   $chave = [Convert]::ToBase64String($bytes)
-   dotnet user-secrets set "Jwt:Key" $chave --project Rank.WebAPI
-   ```
-
-   As opções `SslMode=None` e `AllowPublicKeyRetrieval=True` são apenas para este MySQL em `localhost`. Para outro servidor, configure TLS e revise a autenticação antes de reutilizar a conexão.
+2. Projeto de estudo: a chave JWT e a conexão já vêm prontas em `Rank.WebAPI/appsettings.json`, sem *user secrets*. A conexão padrão usa `root`/`root` no MySQL em `localhost:3306`; se o seu MySQL usar outro usuário ou senha, ajuste `ConnectionStrings:Rank` nesse arquivo.
 
 3. Inicie a API:
 
    ```powershell
-   dotnet run --project Rank.WebAPI --launch-profile https
+   dotnet run --project Rank.WebAPI --launch-profile http
    ```
 
-   O perfil de desenvolvimento abre `https://localhost:7199/swagger`, onde os endpoints ficam listados e podem ser executados. O Swagger fica disponível apenas em desenvolvimento.
+   O perfil de desenvolvimento abre `http://localhost:5100/swagger`, onde os endpoints ficam listados e podem ser executados. O Swagger fica disponível apenas em desenvolvimento. O front usa `http://localhost:5100` por padrão, sem precisar de certificado.
 
 4. Crie a primeira conta pela API:
 
    ```powershell
    $body = @{ email = "voce@exemplo.com"; name = "Seu nome"; password = "uma-senha-forte" } | ConvertTo-Json
-   Invoke-RestMethod -Uri "https://localhost:7199/api/users" -Method Post -ContentType "application/json" -Body $body
+   Invoke-RestMethod -Uri "http://localhost:5100/api/users" -Method Post -ContentType "application/json" -Body $body
    ```
 
    A API calcula o hash da senha e executa um único comando SQL dentro de uma transação: cria uma organização com o mesmo nome do usuário, obtém seu ID com `LAST_INSERT_ID()` e insere a conta com `idOrganizacao` preenchido. A resposta inclui esse vínculo. Se qualquer operação falhar, os dois cadastros são desfeitos; email duplicado continua retornando `409`, sem deixar uma organização criada por esse cadastro.
@@ -86,7 +74,7 @@ O final de [Sqls/001_rank_local.sql](Sqls/001_rank_local.sql) cadastra 24 usuár
 | `PUT /api/tarefa/{id}` | JWT | Atualiza uma tarefa |
 | `DELETE /api/tarefa/{id}` | JWT | Exclui uma tarefa e retorna `204` |
 
-Depois de cadastrar, chame `POST https://localhost:7199/api/auth/authenticate` com JSON:
+Depois de cadastrar, chame `POST http://localhost:5100/api/auth/authenticate` com JSON:
 
 ```json
 { "email": "voce@exemplo.com", "password": "sua-senha" }
@@ -206,4 +194,4 @@ ALTER TABLE rank_local.tarefa ADD COLUMN idColetivo INT NOT NULL DEFAULT 0 AFTER
 
 O Service define `dataCriacao` em UTC e deixa `dataAtualizacao` como `null` no cadastro. Na edição, preserva a data de criação e preenche a data de atualização em UTC. O `PUT` recebe os dados completos da tarefa: campos omitidos assumem os valores padrão do DTO. Consulta, edição ou exclusão de um ID inexistente retornam `404`.
 
-O token expira após 8 horas por padrão. A exclusão da conta invalida seu acesso aos endpoints protegidos. No desenvolvimento, o CORS permite `http://localhost:5173` e `http://localhost:3000`; ajuste `Cors:AllowedOrigins` para a origem real do seu front-end. A senha do banco e a chave JWT não ficam versionadas.
+O token expira após 8 horas por padrão. A exclusão da conta invalida seu acesso aos endpoints protegidos. No desenvolvimento, o CORS permite `http://localhost:5173` e `http://localhost:3000`; ajuste `Cors:AllowedOrigins` para a origem real do seu front-end. A chave JWT e a conexão padrão ficam versionadas no `appsettings.json`, pois o projeto é só para estudo local.

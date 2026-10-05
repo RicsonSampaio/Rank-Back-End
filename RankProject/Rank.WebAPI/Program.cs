@@ -13,7 +13,7 @@ builder.Logging.ClearProviders();
 builder.Logging.AddConsole();
 var jwt = builder.Configuration.GetSection("Jwt").Get<JwtOptions>() ?? new JwtOptions();
 if (Encoding.UTF8.GetByteCount(jwt.Key) < 32)
-    throw new InvalidOperationException("Configure Jwt:Key com pelo menos 32 bytes (por exemplo, via user-secrets).");
+    throw new InvalidOperationException("Configure Jwt:Key com pelo menos 32 bytes no appsettings.json.");
 if (string.IsNullOrWhiteSpace(jwt.Issuer) || string.IsNullOrWhiteSpace(jwt.Audience) || jwt.ExpirationMinutes <= 0)
     throw new InvalidOperationException("Configure Jwt:Issuer, Jwt:Audience e Jwt:ExpirationMinutes.");
 
