@@ -50,4 +50,6 @@ public class TarefaController : BaseController
         var tarefaApp = _provider.GetRequiredService<TarefaApp>();
         return await tarefaApp.DeleteAsync(id) ? NoContent() : NotFound();
     }
+
+    // Ricson, qual o nome do Rank 1?
 }
