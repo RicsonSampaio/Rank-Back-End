@@ -34,7 +34,7 @@ public class UserRepository : DBDapperComponent
     public async Task<User> CreateAsync(User user)
     {
        
-        // rolou alteração aqui
+       
         string commandText = "INSERT INTO organizacao (nome, dataCriacao, logo) VALUES (@Name, @DataCriacao, NULL); " +
             "INSERT INTO " + cTableName +
             " (email, name, passwordhash, isactive, idOrganizacao, admin, dataCriacao, fotoAccount) " +
