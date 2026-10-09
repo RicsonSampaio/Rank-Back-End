@@ -22,6 +22,7 @@ public class Tarefa
     public DateTime? PrazoInicial { get; set; }
     public DateTime? PrazoFinal { get; set; }
     public int? IdResponsavel { get; set; } = 0;
+    public string? NomeResponsavel { get; set; }
     public int? IdFase { get; set; } = 0;
     public int IdRelevancia { get; set; } = 1;
 }

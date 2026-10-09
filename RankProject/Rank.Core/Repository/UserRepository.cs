@@ -33,8 +33,8 @@ public class UserRepository : DBDapperComponent
 
     public async Task<User> CreateAsync(User user)
     {
-        // LAST_INSERT_ID() é o ID da organização no INSERT do usuário.
-        // Após esse INSERT, passa a ser o ID do usuário para o SELECT final.
+       
+        // rolou alteração aqui
         string commandText = "INSERT INTO organizacao (nome, dataCriacao, logo) VALUES (@Name, @DataCriacao, NULL); " +
             "INSERT INTO " + cTableName +
             " (email, name, passwordhash, isactive, idOrganizacao, admin, dataCriacao, fotoAccount) " +
