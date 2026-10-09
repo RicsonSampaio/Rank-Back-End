@@ -124,6 +124,7 @@ public class TarefaService
         PrazoInicial = tarefa.PrazoInicial,
         PrazoFinal = tarefa.PrazoFinal,
         IdResponsavel = tarefa.IdResponsavel,
+        NomeResponsavel = tarefa.NomeResponsavel,
         IdFase = tarefa.IdFase,
         IdRelevancia = tarefa.IdRelevancia
     };
