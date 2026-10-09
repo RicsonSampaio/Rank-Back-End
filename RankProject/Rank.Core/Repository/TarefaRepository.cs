@@ -11,23 +11,21 @@ public class TarefaRepository : DBDapperComponent
             "dataAtualizacao, lastDoneDate, idTarefaPai, userListMarcados, userListParticipantes, idDocumento, " +
             "prazoInicial, prazoFinal, idResponsavel, idFase, idRelevancia";
 
-    // novo
-    private const string cListFieldsComResponsavel =
-            "t.id, t.idColetivo, t.idEspaco, t.idEscopo, t.idstatus, t.idCategoria, t.idUsuarioCriacao, t.titulo, t.privada, t.descricao, t.dataCriacao, " +
-            "t.dataAtualizacao, t.lastDoneDate, t.idTarefaPai, t.userListMarcados, t.userListParticipantes, t.idDocumento, " +
-            "t.prazoInicial, t.prazoFinal, t.idResponsavel, t.idFase, t.idRelevancia, " +
-            "u.name AS NomeResponsavel";
-
     public TarefaRepository() : base()
     {
     }
 
     public async Task<IReadOnlyList<Tarefa>> GetAllAsync(int idColetivo)
     {
-        string commandText = "SELECT " + cListFieldsComResponsavel +
-            " FROM " + cTableName + " t" +
-            " LEFT JOIN usuario u ON u.id = t.idResponsavel" +
-            " WHERE t.idColetivo = @idColetivo ORDER BY t.id";
+        string commandText = $@"SELECT  t.id,
+                                        t.idColetivo, t.idEspaco, t.idEscopo, t.idstatus, t.idCategoria, t.idUsuarioCriacao, t.titulo, t.privada,
+                                        t.descricao, t.dataCriacao, t.dataAtualizacao, t.lastDoneDate, t.idTarefaPai, t.userListMarcados,
+                                        t.userListParticipantes, t.idDocumento, t.prazoInicial, t.prazoFinal, t.idResponsavel, t.idFase, t.idRelevancia,
+                                        u.name AS NomeResponsavel
+                                FROM {cTableName} t 
+                                LEFT JOIN usuario u ON u.id = t.idResponsavel
+                                WHERE t.idColetivo = @idColetivo
+                                ORDER BY t.id";
         return await QueryListAsync<Tarefa>(commandText, new { idColetivo }).ConfigureAwait(false);
     }
 
