@@ -7,6 +7,7 @@ public record TarefaResponse
     public int IdEspaco { get; set; } = 0;
     public int? IdEscopo { get; set; } = 0;
     public int IdStatus { get; set; } = 0;
+    public string? NomeStatus { get; set; }
     public int IdCategoria { get; set; } = 0;
     public int IdUsuarioCriacao { get; set; } = 0;
     public string Titulo { get; set; } = string.Empty;
