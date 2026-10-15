@@ -109,6 +109,7 @@ public class TarefaService
         IdEspaco = tarefa.IdEspaco,
         IdEscopo = tarefa.IdEscopo,
         IdStatus = tarefa.IdStatus,
+        NomeStatus = tarefa.NomeStatus,
         IdCategoria = tarefa.IdCategoria,
         IdUsuarioCriacao = tarefa.IdUsuarioCriacao,
         Titulo = tarefa.Titulo,

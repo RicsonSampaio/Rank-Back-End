@@ -21,9 +21,12 @@ public class TarefaRepository : DBDapperComponent
                                         t.idColetivo, t.idEspaco, t.idEscopo, t.idstatus, t.idCategoria, t.idUsuarioCriacao, t.titulo, t.privada,
                                         t.descricao, t.dataCriacao, t.dataAtualizacao, t.lastDoneDate, t.idTarefaPai, t.userListMarcados,
                                         t.userListParticipantes, t.idDocumento, t.prazoInicial, t.prazoFinal, t.idResponsavel, t.idFase, t.idRelevancia,
-                                        u.name AS NomeResponsavel
+                                        u.name AS NomeResponsavel,
+                                        s.nome AS NomeStatus
+                                
                                 FROM {cTableName} t 
                                 LEFT JOIN usuario u ON u.id = t.idResponsavel
+                                LEFT JOIN tarefa_status s ON s.id = t.idstatus
                                 WHERE t.idColetivo = @idColetivo
                                 ORDER BY t.id";
         return await QueryListAsync<Tarefa>(commandText, new { idColetivo }).ConfigureAwait(false);
