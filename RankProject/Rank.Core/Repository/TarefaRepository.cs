@@ -34,7 +34,19 @@ public class TarefaRepository : DBDapperComponent
 
     public async Task<Tarefa?> GetByIdAsync(int id)
     {
-        string commandText = "SELECT " + cListFields + " FROM " + cTableName + " WHERE id = @id";
+        string commandText = $@"SELECT  t.id,
+                                        t.idColetivo, t.idEspaco, t.idEscopo, t.idstatus, t.idCategoria, t.idUsuarioCriacao, t.titulo, t.privada,
+                                        t.descricao, t.dataCriacao, t.dataAtualizacao, t.lastDoneDate, t.idTarefaPai, t.userListMarcados,
+                                        t.userListParticipantes, t.idDocumento, t.prazoInicial, t.prazoFinal, t.idResponsavel, t.idFase, t.idRelevancia,
+                                        u.name AS NomeResponsavel,
+                                        s.nome AS NomeStatus
+
+                            FROM {cTableName} t
+                            LEFT JOIN usuario u ON u.id = t.idResponsavel
+                            LEFT JOIN tarefa_status s ON s.id = t.idstatus
+                            WHERE t.id = @id
+                            ORDER BY t.id";
+
         return await QuerySingleAsync<Tarefa>(commandText, new { id }).ConfigureAwait(false);
     }
 
