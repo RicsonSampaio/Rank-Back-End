@@ -40,6 +40,7 @@ public class ColetivoController : BaseController
         return coletivo is null ? NotFound() : Ok(coletivo);
     }
 
+
     [HttpPut("{id:int}")]
     public async Task<IActionResult> Update(
         int id, [FromBody] UpdateColetivoRequest request)

@@ -17,6 +17,7 @@ public static class DependencyInjection
         services.AddSingleton<OrganizacaoRepository>();
         services.AddSingleton<ColetivoRepository>();
         services.AddSingleton<TarefaRepository>();
+        services.AddSingleton<TarefaStatusRepository>();
         services.AddSingleton<MembroRepository>();
         services.AddSingleton<TokenGenerator>();
         services.AddScoped<AccountService>();

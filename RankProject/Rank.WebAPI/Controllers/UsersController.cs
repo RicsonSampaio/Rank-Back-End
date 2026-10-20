@@ -2,8 +2,10 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.DependencyInjection;
 using Rank.Application.App;
+using Rank.Core.DTO.Request.Tarefas;
 using Rank.Core.DTO.Request.Users;
 using Rank.Core.Helper;
+using System.ComponentModel.DataAnnotations;
 
 namespace Rank.WebAPI.Controllers;
 
@@ -46,17 +48,17 @@ public class UsersController : BaseController
     }
 
     [HttpPut("{id:int}")]
-    public async Task<IActionResult> Update(int id, [FromBody] UpdateUserRequest request)
+    public async Task<IActionResult> Update(int id, [FromBody] UpdateTarefaRequest request)
     {
         try
         {
-            var userApp = _provider.GetRequiredService<UserApp>();
-            var user = await userApp.UpdateAsync(id, request);
-            return user is null ? NotFound() : Ok(user);
+            var tarefaApp = _provider.GetRequiredService<TarefaApp>();
+            var tarefa = await tarefaApp.UpdateAsync(id, request);
+            return tarefa is null ? NotFound() : Ok(tarefa);
         }
-        catch (Exception ex) when (UserHelper.IsEmailAlreadyInUse(ex))
+        catch (ValidationException ex)
         {
-            return Conflict(new { message = UserHelper.EmailAlreadyInUseMessage });
+            return BadRequest(new { message = ex.Message });
         }
     }
 
