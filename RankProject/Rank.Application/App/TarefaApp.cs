@@ -43,4 +43,10 @@ public class TarefaApp
         var tarefaService = _provider.GetRequiredService<TarefaService>();
         return tarefaService.DeleteAsync(id);
     }
+
+    public Task<IReadOnlyList<TarefaStatusResponse>> GetAllStatusAsync()
+    {
+        var tarefaService = _provider.GetRequiredService<TarefaService>();
+        return tarefaService.GetAllStatusAsync();
+    }
 }

@@ -3,6 +3,7 @@ using Rank.Core.DomainEntity;
 using Rank.Core.DTO.Request.Tarefas;
 using Rank.Core.DTO.Response;
 using Rank.Core.Repository;
+using System.ComponentModel.DataAnnotations;
 
 namespace Rank.Core.Service;
 
@@ -17,6 +18,7 @@ public class TarefaService
 
     public async Task<TarefaResponse> CreateAsync(CreateTarefaRequest request)
     {
+        await ValidarStatusAsync(request.IdStatus).ConfigureAwait(false);
         var tarefaRepository = _provider.GetRequiredService<TarefaRepository>();
         var tarefa = new Tarefa
         {
@@ -62,6 +64,7 @@ public class TarefaService
 
     public async Task<TarefaResponse?> UpdateAsync(int id, UpdateTarefaRequest request)
     {
+        await ValidarStatusAsync(request.IdStatus).ConfigureAwait(false);
         var tarefaRepository = _provider.GetRequiredService<TarefaRepository>();
         var current = await tarefaRepository.GetByIdAsync(id).ConfigureAwait(false);
         if (current is null)
@@ -129,4 +132,26 @@ public class TarefaService
         IdFase = tarefa.IdFase,
         IdRelevancia = tarefa.IdRelevancia
     };
+
+    public async Task<IReadOnlyList<TarefaStatusResponse>> GetAllStatusAsync()
+    {
+        var statusRepository = _provider.GetRequiredService<TarefaStatusRepository>();
+        var lista = await statusRepository.GetAllAsync().ConfigureAwait(false);
+        return lista.Select(ToResponse).ToArray();
+    }
+
+    private async Task ValidarStatusAsync(int idStatus)
+    {
+        var statusRepository = _provider.GetRequiredService<TarefaStatusRepository>();
+        var status = await statusRepository.GetByIdAsync(idStatus).ConfigureAwait(false);
+        if (status is null)
+            throw new ValidationException("Status da tarefa inválido.");
+    }
+
+    private static TarefaStatusResponse ToResponse(TarefaStatus status) => new()
+    {
+        Id = status.Id,
+        Nome = status.Nome
+    };
+
 }
